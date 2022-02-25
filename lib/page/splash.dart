@@ -51,12 +51,12 @@ class _SplashPageState extends SupabaseAuthState<SplashPage>
 
   @override
   void onAuthenticated(Session session) {
-    Get.off(const MainPage());
+    Get.off(() => const MainPage());
   }
 
   @override
   void onErrorAuthenticating(String message) {
-    Get.off(const LoginPage());
+    Get.off(() => const LoginPage());
   }
 
   @override
@@ -64,6 +64,6 @@ class _SplashPageState extends SupabaseAuthState<SplashPage>
 
   @override
   void onUnauthenticated() {
-    Get.off(const LoginPage());
+    Get.off(() => const LoginPage());
   }
 }
