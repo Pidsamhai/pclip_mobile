@@ -20,17 +20,11 @@ class _SplashPageState extends SupabaseAuthState<SplashPage>
   @override
   void initState() {
     super.initState();
-
-    /// a timer to slow down session restore
-    /// If not user can't really see the splash screen
-    const _duration = Duration(seconds: 1);
-    recoverSessionTimer = Timer(_duration, () {
+    recoverSessionTimer = Timer(const Duration(seconds: 1), () {
       recoverSupabaseSession();
     });
   }
 
-  /// on received auth deeplink, we should cancel recoverSessionTimer
-  /// and wait for auth deep link handling result
   @override
   void onReceivedAuthDeeplink(Uri uri) {
     if (recoverSessionTimer != null) {
@@ -40,10 +34,16 @@ class _SplashPageState extends SupabaseAuthState<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Scaffold(
         body: Center(
-          child: Text("PClip"),
+          child: Text(
+            "PClip",
+            style: Theme.of(context).textTheme.headline4?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+          ),
         ),
       ),
     );
