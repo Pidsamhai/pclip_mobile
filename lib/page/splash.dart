@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pclip_mobile/page/login.dart';
-import 'package:pclip_mobile/page/main.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pclip_mobile/component/auth_state.dart';
+import 'package:pclip_mobile/widget/email_password_form.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -13,8 +10,9 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends SupabaseAuthState<SplashPage>
+class _SplashPageState extends AuthState<SplashPage>
     with SingleTickerProviderStateMixin {
+  final controller = EmailPasswordController();
   Timer? recoverSessionTimer;
 
   @override
@@ -35,35 +33,15 @@ class _SplashPageState extends SupabaseAuthState<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Scaffold(
-        body: Center(
-          child: Text(
-            "PClip",
-            style: Theme.of(context).textTheme.headline4?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
-          ),
+      body: Center(
+        child: Text(
+          "Pclip",
+          style: Theme.of(context).textTheme.headline5?.copyWith(
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
     );
-  }
-
-  @override
-  void onAuthenticated(Session session) {
-    Get.off(() => const MainPage());
-  }
-
-  @override
-  void onErrorAuthenticating(String message) {
-    Get.off(() => const LoginPage());
-  }
-
-  @override
-  void onPasswordRecovery(Session session) {}
-
-  @override
-  void onUnauthenticated() {
-    Get.off(() => const LoginPage());
   }
 }
