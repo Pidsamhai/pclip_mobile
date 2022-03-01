@@ -29,29 +29,15 @@ jobs:
         cache: true
         cache-key: flutter
         cache-path: ${{ runner.tool_cache }}/flutter
-
-    - name: GET key_store.jks
-      run: | 
-        wget --header="Authorization: token ${{ secrets.KEY_GH_TOKEN }}" \
-        --header="Accept: application/vnd.github.v3.raw" \
-        -O ./android/app/key_store.jks \
-        "https://api.github.com/repos/mengxyz/my_key_stores/contents/psm_dev_unsign.jks"
-
-    - name: GET key.properties
-      run: |
-        wget --header="Authorization: token ${{ secrets.KEY_GH_TOKEN }}" \
-        --header="Accept: application/vnd.github.v3.raw" \
-        -O ./android/key.properties \
-        "https://api.github.com/repos/mengxyz/my_key_stores/contents/key.properties"
     
     - name: Install Depencies
       run: flutter pub get
 
     - name: Build Apk
-      run: flutter build apk --release
+      run: flutter build apk --profile
 
     - uses: actions/upload-artifact@v2
       with:
-        name: android
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: android-profile
+        path: build/app/outputs/flutter-apk/app-profile.apk
         retention-days: 7
