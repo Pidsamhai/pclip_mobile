@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
 import 'package:pclip_mobile/page/splash.dart';
 import 'package:pclip_mobile/repository/auth_repository.dart';
@@ -12,13 +13,14 @@ void main() async {
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnnonKey,
-    authCallbackUrlHostname: 'login-callback', // optional,
+    authCallbackUrlHostname: 'login-callback',
     localStorage: SecureLocalStorage(),
     debug: true,
   );
 
+  await Get.putAsync<PackageInfo>((() => PackageInfo.fromPlatform()));
   Get.put<SupabaseClient>(Supabase.instance.client);
-  Get.put<AuthRepository>(AuthRepository(client: Get.find()));
+  Get.put<AuthRepository>(AuthRepository(client: Get.find(), pkg: Get.find()));
   Get.put<UserInfoController>(UserInfoController(Get.find()));
 
   runApp(const MyApp());

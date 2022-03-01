@@ -1,4 +1,4 @@
-package com.example.pclip_mobile
+package com.github.pidsamhai.pclip
 
 import io.flutter.embedding.android.FlutterActivity
 
