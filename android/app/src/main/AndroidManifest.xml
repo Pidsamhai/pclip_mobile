@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.pclip_mobile">
+    package="com.github.pidsamhai.pclip">
    <application
-        android:label="pclip_mobile"
+        android:label="Pclip"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

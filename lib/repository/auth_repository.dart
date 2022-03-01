@@ -1,11 +1,15 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
   final SupabaseClient client;
-  final AuthOptions _authOptions =
-      AuthOptions(redirectTo: "com.github.pidsamhai.pclip://login-callback");
-  // AuthOptions(redirectTo: "com.github.pidsamhai.plcip://login-callback/");
-  AuthRepository({required this.client});
+  final PackageInfo pkg;
+  late final AuthOptions _authOptions;
+  AuthRepository({required this.client, required this.pkg}) {
+    _authOptions = AuthOptions(
+      redirectTo: "${pkg.packageName}://login-callback",
+    );
+  }
   Future<bool> providerAuth(Provider provider) {
     return client.auth.signInWithProvider(provider, options: _authOptions);
   }
