@@ -1,2 +1,3 @@
-const supabaseUrl = "";
-const supabaseAnnonKey = "";
+const supabaseUrl = "https://jfgkjxehizthblossdux.supabase.co";
+const supabaseAnnonKey =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmZ2tqeGVoaXp0aGJsb3NzZHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDU1NTY0NDUsImV4cCI6MTk2MTEzMjQ0NX0.r9eMwHR13DXqk8SGe7hk8xh43xbZtIonDh5OfNyA3FE";
