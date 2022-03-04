@@ -10,4 +10,6 @@ class CustomIcons {
 
   static const IconData github_alt =
       IconData(0xf113, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData random =
+      IconData(0xf074, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

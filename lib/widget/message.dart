@@ -5,8 +5,13 @@ import 'package:pclip_mobile/widget/message_actions_bottomsheet.dart';
 class Message extends StatelessWidget {
   final bool isOwner;
   final String? message;
-  const Message({Key? key, this.isOwner = false, this.message})
-      : super(key: key);
+  final VoidCallback? onLongPress;
+  const Message({
+    Key? key,
+    this.isOwner = false,
+    this.message,
+    this.onLongPress,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +20,7 @@ class Message extends StatelessWidget {
       child: Card(
         color: isOwner ? Colors.blue : Colors.grey.shade300,
         child: InkWell(
-          onLongPress: () => Get.bottomSheet(
-            const MessageActionsBottomSheet(),
-            enableDrag: false,
-            backgroundColor: Colors.white,
-          ),
+          onLongPress: onLongPress,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Text(

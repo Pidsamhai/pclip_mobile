@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pclip_mobile/controller/room_controller.dart';
 import 'package:pclip_mobile/page/room_setting.dart';
-import 'package:pclip_mobile/widget/create_room_bottomsheet.dart';
+import 'package:pclip_mobile/widget/message_actions_bottomsheet.dart';
+import 'package:pclip_mobile/widget/progress_dialog.dart';
 import 'package:pclip_mobile/widget/refresh_indicator.dart';
 import 'package:pclip_mobile/widget/message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class Room extends StatefulWidget {
+class RoomPage extends StatefulWidget {
   final String roomTitle;
-  const Room({Key? key, required this.roomTitle}) : super(key: key);
+  final String roomId;
+  late final RoomController controller;
+  RoomPage({
+    Key? key,
+    required this.roomTitle,
+    required this.roomId,
+  }) : super(key: key) {
+    controller = RoomController(
+      roomId: roomId,
+      authRepository: Get.find(),
+      client: Get.find(),
+    );
+  }
 
   @override
-  State<Room> createState() => _RoomState();
+  State<RoomPage> createState() => _RoomPageState();
 }
 
-class _RoomState extends State<Room> {
+class _RoomPageState extends State<RoomPage> {
   final _scrollController = ScrollController();
   final _refreshController = RefreshController();
+  final _messageController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +46,24 @@ class _RoomState extends State<Room> {
     _refreshController.loadFailed();
   }
 
+  void _sendMessage() {
+    if (_messageController.text.isEmpty) return;
+    widget.controller.sendMessage(_messageController.text);
+    _messageController.text = "";
+  }
+
+  Future<void> _deleteMessage(String uid) async {
+    Get.dialog(
+      const ProgressDialog(),
+      barrierDismissible: false,
+    );
+    try {
+      await widget.controller.deleteMessage(uid);
+    } finally {
+      Get.back();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +71,8 @@ class _RoomState extends State<Room> {
         title: Text(widget.roomTitle),
         actions: [
           IconButton(
-            onPressed: () => Get.to(() => const RoomSettingPage()),
+            onPressed: () =>
+                Get.to(() => RoomSettingPage(roomId: widget.roomId)),
             icon: const Icon(Icons.settings),
           )
         ],
@@ -48,50 +82,49 @@ class _RoomState extends State<Room> {
         child: Column(
           children: [
             Flexible(
-              child: SmartRefresher(
-                scrollController: _scrollController,
-                enablePullDown: false,
-                enablePullUp: true,
-                enableTwoLevel: false,
-                onLoading: _onRefresh,
-                footer: footerRefreshIndicator(),
-                controller: _refreshController,
-                child: ListView(
-                  controller: _scrollController,
-                  children: const [
-                    Message(),
-                    Message(),
-                    Message(
-                      isOwner: true,
+              child: GetX<RoomController>(
+                init: widget.controller,
+                builder: (controller) => SmartRefresher(
+                  enablePullDown: false,
+                  scrollController: _scrollController,
+                  enablePullUp: true,
+                  enableTwoLevel: false,
+                  onLoading: _onRefresh,
+                  footer: footerRefreshIndicator(),
+                  controller: _refreshController,
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScopeNode currentFocus = FocusScope.of(context);
+                      if (!currentFocus.hasPrimaryFocus) {
+                        currentFocus.unfocus();
+                      }
+                    },
+                    child: ListView.builder(
+                      itemCount: controller.messages.value.length,
+                      controller: _scrollController,
+                      itemBuilder: (context, index) {
+                        final message = controller.messages.value[index];
+                        return Message(
+                          message: message.message,
+                          isOwner: message.isOwner,
+                          onLongPress: () => Get.bottomSheet(
+                            MessageActionsBottomSheet(
+                              onCopy: () => {},
+                              onDelete: () => _deleteMessage(message.uid),
+                            ),
+                            backgroundColor: Colors.white,
+                          ),
+                        );
+                      },
                     ),
-                    Message(
-                      isOwner: true,
-                      message: """Hello how are you?\nTo day is monday.""",
-                    ),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(isOwner: true),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(isOwner: true),
-                    Message(),
-                    Message(),
-                    Message(),
-                    Message(isOwner: true),
-                  ],
+                  ),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: TextField(
+                controller: _messageController,
                 minLines: 1,
                 maxLines: 99,
                 textAlignVertical: TextAlignVertical.center,
@@ -102,7 +135,7 @@ class _RoomState extends State<Room> {
                     icon: const Icon(Icons.add_circle_rounded),
                   ),
                   suffixIcon: IconButton(
-                    onPressed: () => {},
+                    onPressed: _sendMessage,
                     icon: const Icon(Icons.send),
                   ),
                 ),
