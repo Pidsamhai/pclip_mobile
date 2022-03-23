@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pclip_mobile/controller/sign_in_controller.dart';
 import 'package:pclip_mobile/icons/custom_icons.dart';
 import 'package:pclip_mobile/component/auth_state.dart';
 import 'package:pclip_mobile/widget/email_password_form.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({Key? key}) : super(key: key);
+  final SignInController controller = Get.put(SignInController());
+  SignInPage({Key? key}) : super(key: key);
 
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
 
 class _SignInPageState extends AuthState<SignInPage> {
-  final controller = EmailPasswordController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,19 +25,21 @@ class _SignInPageState extends AuthState<SignInPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              EmailPasswordForm(controller: controller),
+              EmailPasswordForm(controller: widget.controller.inputController),
               const SizedBox.square(dimension: 8.0),
-              Text(
-                "Error Message",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+              Obx(
+                () => Text(
+                  widget.controller.authError.value,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
               ),
               const SizedBox.square(dimension: 8.0),
               SizedBox(
                 width: double.maxFinite,
                 child: ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: () => widget.controller.signIn(),
                   child: const Text("SignIn"),
                 ),
               ),

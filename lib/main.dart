@@ -6,16 +6,18 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pclip_mobile/controller/hall_controller.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
 import 'package:pclip_mobile/page/splash.dart';
+import 'package:pclip_mobile/repository/api_repository.dart';
 import 'package:pclip_mobile/repository/auth_repository.dart';
 import 'package:pclip_mobile/component/secure_storage.dart';
-import 'package:pclip_mobile/utils/staic.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnnonKey,
+    url: dotenv.env["SUPABASE_API_URL"],
+    anonKey: dotenv.env["SUPABASE_ANON_KEY"],
     authCallbackUrlHostname: 'login-callback',
     localStorage: SecureLocalStorage(),
     debug: true,
@@ -34,6 +36,7 @@ void main() async {
   Get.put<HallController>(HallController(
     client: Get.find(),
   ));
+  Get.put(ApiRepository(Get.find()));
 
   runApp(const MyApp());
 }
@@ -56,6 +59,11 @@ class MyApp extends StatelessWidget {
             ),
           ),
           clipBehavior: Clip.antiAliasWithSaveLayer,
+        ),
+        dialogTheme: DialogTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
         ),
       ),
       home: const SplashPage(),

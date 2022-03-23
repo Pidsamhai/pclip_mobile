@@ -14,6 +14,11 @@ class AuthRepository {
     return client.auth.signInWithProvider(provider, options: _authOptions);
   }
 
+  Future<GotrueSessionResponse> signInEmailPassword(
+      String email, String password) {
+    return client.auth.signIn(email: email, password: password);
+  }
+
   Future signout() async {
     try {
       final result = await client.auth.signOut();
@@ -26,4 +31,6 @@ class AuthRepository {
   }
 
   User? get user => client.auth.currentUser;
+
+  String? get accessToken => client.auth.session()?.accessToken;
 }

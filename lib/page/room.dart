@@ -9,16 +9,11 @@ import 'package:pclip_mobile/widget/message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RoomPage extends StatefulWidget {
-  final String roomTitle;
-  final String roomId;
   late final RoomController controller;
   RoomPage({
     Key? key,
-    required this.roomTitle,
-    required this.roomId,
   }) : super(key: key) {
     controller = RoomController(
-      roomId: roomId,
       authRepository: Get.find(),
       client: Get.find(),
     );
@@ -29,21 +24,22 @@ class RoomPage extends StatefulWidget {
 }
 
 class _RoomPageState extends State<RoomPage> {
-  final _scrollController = ScrollController();
-  final _refreshController = RefreshController();
   final _messageController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      try {
+        widget.controller.scrollController.jumpTo(
+            widget.controller.scrollController.position.maxScrollExtent);
+      } finally {}
     });
   }
 
   void _onRefresh() async {
     await Future.delayed(const Duration(seconds: 2));
-    _refreshController.loadFailed();
+    widget.controller.refreshController.loadFailed();
   }
 
   void _sendMessage() {
@@ -52,13 +48,13 @@ class _RoomPageState extends State<RoomPage> {
     _messageController.text = "";
   }
 
-  Future<void> _deleteMessage(String uid) async {
+  Future<void> _deleteMessage(String id) async {
     Get.dialog(
       const ProgressDialog(),
       barrierDismissible: false,
     );
     try {
-      await widget.controller.deleteMessage(uid);
+      await widget.controller.deleteMessage(id);
     } finally {
       Get.back();
     }
@@ -68,11 +64,11 @@ class _RoomPageState extends State<RoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.roomTitle),
+        title: Text(widget.controller.room.name),
         actions: [
           IconButton(
             onPressed: () =>
-                Get.to(() => RoomSettingPage(roomId: widget.roomId)),
+                Get.to(() => RoomSettingPage(), arguments: Get.arguments),
             icon: const Icon(Icons.settings),
           )
         ],
@@ -86,12 +82,12 @@ class _RoomPageState extends State<RoomPage> {
                 init: widget.controller,
                 builder: (controller) => SmartRefresher(
                   enablePullDown: false,
-                  scrollController: _scrollController,
+                  scrollController: controller.scrollController,
                   enablePullUp: true,
                   enableTwoLevel: false,
                   onLoading: _onRefresh,
                   footer: footerRefreshIndicator(),
-                  controller: _refreshController,
+                  controller: controller.refreshController,
                   child: GestureDetector(
                     onTap: () {
                       FocusScopeNode currentFocus = FocusScope.of(context);
@@ -101,7 +97,7 @@ class _RoomPageState extends State<RoomPage> {
                     },
                     child: ListView.builder(
                       itemCount: controller.messages.value.length,
-                      controller: _scrollController,
+                      controller: widget.controller.scrollController,
                       itemBuilder: (context, index) {
                         final message = controller.messages.value[index];
                         return Message(
@@ -110,7 +106,7 @@ class _RoomPageState extends State<RoomPage> {
                           onLongPress: () => Get.bottomSheet(
                             MessageActionsBottomSheet(
                               onCopy: () => {},
-                              onDelete: () => _deleteMessage(message.uid),
+                              onDelete: () => _deleteMessage(message.id),
                             ),
                             backgroundColor: Colors.white,
                           ),

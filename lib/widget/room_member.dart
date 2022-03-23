@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pclip_mobile/model/room_member.dart';
+import 'package:pclip_mobile/widget/confirm_dialog.dart';
 
 class RoomMemberCard extends StatelessWidget {
-  const RoomMemberCard({Key? key}) : super(key: key);
+  final VoidCallback? onDelete;
+  final RoomMember roomMember;
+  const RoomMemberCard({Key? key, required this.roomMember, this.onDelete})
+      : super(key: key);
+
+  _onDelete() {
+    Get.dialog(
+        ConfirmDialog(message: "Confirm delete member", onConfirm: onDelete));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +28,19 @@ class RoomMemberCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Member name",
+                    roomMember.deviceName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox.square(dimension: 4),
                   Text(
-                    "Member uid",
+                    roomMember.memberId,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
             IconButton(
-              onPressed: () => {},
+              onPressed: () => _onDelete(),
               icon: const Icon(Icons.close_rounded),
             )
           ],

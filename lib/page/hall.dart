@@ -20,16 +20,17 @@ class HallPage extends GetView<HallController> {
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 2));
+    controller.refreshData();
     _refreshController.refreshCompleted();
   }
 
-  Future<void> _deleteRoom(String uid) async {
+  Future<void> _deleteRoom(String id) async {
     Get.dialog(
       const ProgressDialog(),
       barrierDismissible: false,
     );
     try {
-      await controller.deleteRoom(uid: uid);
+      await controller.deleteRoom(id: id);
     } finally {
       Get.back();
     }
@@ -87,15 +88,10 @@ class HallPage extends GetView<HallController> {
                 final item = controller.rooms.value[index];
                 return RoomCard(
                   room: item,
-                  onTab: () => Get.to(
-                    () => RoomPage(
-                      roomTitle: item.name,
-                      roomId: item.uid,
-                    ),
-                  ),
+                  onTab: () => Get.to(() => RoomPage(), arguments: item),
                   onLongPress: () => Get.bottomSheet(
                     RoomActionsBottomSheet(
-                      onDelete: () => _deleteRoom(item.uid),
+                      onDelete: () => _deleteRoom(item.id),
                     ),
                     enableDrag: false,
                     backgroundColor: Colors.white,

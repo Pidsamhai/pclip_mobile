@@ -14,6 +14,7 @@ class RoomSettingInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _randomPasword();
     return Form(
       key: controller?.state,
       child: Column(
