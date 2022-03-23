@@ -2,22 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pclip_mobile/widget/message_actions_item.dart';
 
-class MessageActionsBottomSheet extends StatelessWidget {
-  final VoidCallback? onCopy;
+class RoomActionsBottomSheet extends StatelessWidget {
   final VoidCallback? onDelete;
-  const MessageActionsBottomSheet({
-    Key? key,
-    this.onCopy,
-    this.onDelete,
-  }) : super(key: key);
+  const RoomActionsBottomSheet({Key? key, this.onDelete}) : super(key: key);
 
-  _onCopy() {
+  _onSetting() {
     Get.back();
-    onCopy?.call();
   }
 
   _onDelete() {
-    Get.back();
+    Get.back(closeOverlays: true);
     onDelete?.call();
   }
 
@@ -31,17 +25,17 @@ class MessageActionsBottomSheet extends StatelessWidget {
           Flexible(
             fit: FlexFit.tight,
             child: MessageActionItem(
-              icon: const Icon(Icons.copy_outlined),
-              title: "Copy",
-              onTap: _onCopy,
+              icon: const Icon(Icons.delete_outline_rounded),
+              title: "Delete",
+              onTap: _onDelete,
             ),
           ),
           Flexible(
             fit: FlexFit.tight,
             child: MessageActionItem(
-              icon: const Icon(Icons.delete_outline_rounded),
-              title: "Delete",
-              onTap: _onDelete,
+              icon: const Icon(Icons.settings),
+              title: "Setting",
+              onTap: _onSetting,
             ),
           ),
         ],

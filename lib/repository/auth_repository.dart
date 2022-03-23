@@ -24,4 +24,6 @@ class AuthRepository {
       rethrow;
     }
   }
+
+  User? get user => client.auth.currentUser;
 }
