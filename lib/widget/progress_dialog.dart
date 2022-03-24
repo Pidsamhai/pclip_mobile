@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProgressDialog extends Dialog {
+  static show({bool dismiss = false}) {
+    return Get.dialog(
+      const ProgressDialog(),
+      barrierDismissible: dismiss,
+    );
+  }
+
   const ProgressDialog({Key? key}) : super(key: key);
 
   // @override
