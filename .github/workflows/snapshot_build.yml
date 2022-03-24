@@ -5,6 +5,8 @@ on:
     branches:    
       - 'main'
       - 'dev'
+    types: [synchronize, opened, reopened, edited]
+    
 jobs:
   # build_ios:
   #   runs-on: macos-latest
