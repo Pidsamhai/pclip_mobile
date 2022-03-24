@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pclip_mobile/binding/room_binding.dart';
 import 'package:pclip_mobile/controller/hall_controller.dart';
 import 'package:pclip_mobile/page/room.dart';
 import 'package:pclip_mobile/widget/create_room_bottomsheet.dart';
@@ -49,7 +50,11 @@ class HallPage extends GetView<HallController> {
                 final item = controller.rooms.value[index];
                 return RoomCard(
                   room: item,
-                  onTab: () => Get.to(() => RoomPage(), arguments: item),
+                  onTab: () => Get.to(
+                    () => const RoomPage(),
+                    arguments: item,
+                    binding: HomeBinding(),
+                  ),
                   onLongPress: () => Get.bottomSheet(
                     RoomActionsBottomSheet(
                       onDelete: () => controller.deleteRoom(id: item.id),
