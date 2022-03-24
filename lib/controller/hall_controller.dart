@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 import 'package:pclip_mobile/model/room.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class HallController extends GetxController {
   late final SupabaseClient _client;
@@ -22,10 +21,13 @@ class HallController extends GetxController {
     rooms.bindStream(_roomsStreams());
   }
 
-  Future<void> deleteRoom({required String uid}) async {
+  refreshData() {
+    refresh();
+  }
+
+  Future<void> deleteRoom({required String id}) async {
     try {
-      final result =
-          await _client.from("room").delete().eq("uid", uid).execute();
+      final result = await _client.from("room").delete().eq("id", id).execute();
       logDebug(result.data);
       logDebug(result.error);
       logDebug(result.status);
@@ -37,23 +39,24 @@ class HallController extends GetxController {
   }
 
   Future<void> createRoom(String name, String secret) async {
-    await Future.delayed(const Duration(seconds: 3));
     try {
-      final result =
-          await _client.from("room").insert({"name": name}).execute();
-      final room = Room.fromJson((result.data as List).first);
+      final payload = {"id": const Uuid().v4(), "name": name};
+      final result = await _client
+          .from("room")
+          .insert(payload, returning: ReturningOption.minimal)
+          .execute();
+      if (result.error != null) {
+        throw Exception(result.error?.message);
+      }
       const storage = FlutterSecureStorage();
-      await storage.write(key: room.uid, value: secret);
-      logDebug(result.data);
-      logDebug(result.error);
-      logDebug(result.status);
+      await storage.write(key: payload["id"]!, value: secret);
     } catch (e) {
-      logError("Create Room", [e]);
+      logError(e);
     }
   }
 
   Stream<List<Room>> _roomsStreams() {
-    return _client.from("room").stream(["uid"]).execute().map((event) {
+    return _client.from("room").stream(["id"]).execute().map((event) {
           return (event).map((e) => Room.fromJson(e)).toList();
         });
   }

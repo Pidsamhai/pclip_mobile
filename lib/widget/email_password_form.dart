@@ -58,7 +58,7 @@ class EmailPasswordController {
   final passwordController = TextEditingController();
   final state = GlobalKey<FormState>();
   String get email => emailController.text;
-  String get pasword => emailController.text;
+  String get pasword => passwordController.text;
   bool get valid => state.currentState?.validate() == true;
   final bool validateOnChange;
   EmailPasswordController({this.validateOnChange = false});

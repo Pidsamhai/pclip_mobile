@@ -11,7 +11,7 @@ class UserInfoController extends GetxController {
       isLoading.value = true;
       await _authRepository.signout();
       Get.back();
-      Get.offAll(() => const SignInPage());
+      Get.offAll(() => SignInPage());
     } finally {
       isLoading.value = false;
     }

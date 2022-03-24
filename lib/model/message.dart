@@ -1,7 +1,8 @@
 import 'package:encrypt/encrypt.dart';
+import 'package:pclip_mobile/utils/message_encrypter.dart';
 
 class Message {
-  final String uid;
+  final String id;
   final String message;
   final String? expired;
   final String sender;
@@ -9,7 +10,7 @@ class Message {
   final bool isOwner;
 
   Message({
-    required this.uid,
+    required this.id,
     required this.message,
     this.expired,
     required this.sender,
@@ -19,56 +20,48 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json, {required String owner}) {
     return Message(
-        uid: json["uid"],
-        message: json["message"],
-        expired: json["expired"],
-        sender: json["sender"],
-        roomId: json["roomid"],
-        isOwner: json["sender"] == owner);
+      id: json["id"],
+      message: json["message"],
+      expired: json["expired"],
+      sender: json["sender"],
+      roomId: json["room_id"],
+      isOwner: json["sender"] == owner,
+    );
   }
 
   factory Message.fromJsonEncrypt(
     Map<String, dynamic> json, {
     required String owner,
-    required String secret,
+    required MessageEncrypter encrypter,
   }) {
-    final key = Key.fromUtf8(secret);
-    final iv = IV.fromLength(16);
-    final encrypter = Encrypter(AES(key, padding: null));
-    final decryptMessage =
-        encrypter.decrypt(Encrypted.fromBase64(json["message"]), iv: iv);
     return Message(
-      uid: json["uid"],
-      message: decryptMessage,
+      id: json["id"],
+      message: encrypter.decrypt(json["message"]),
       expired: json["expired"],
       sender: json["sender"],
-      roomId: json["roomid"],
+      roomId: json["room_id"],
       isOwner: json["sender"] == owner,
     );
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data["uid"] = uid;
+    data["id"] = id;
     data["message"] = message;
     data["expired"] = expired;
     data["sender"] = sender;
-    data["roomid"] = roomId;
+    data["room_id"] = roomId;
     return data;
   }
 
   static Map<String, dynamic> createJsonEncrypt(
     String message,
-    String secret,
     String roomId,
+    MessageEncrypter encrypter,
   ) {
-    final key = Key.fromUtf8(secret);
-    final iv = IV.fromLength(16);
-    final encrypter = Encrypter(AES(key, padding: null));
-    final encryptMessage = encrypter.encrypt(message, iv: iv);
     final data = <String, dynamic>{};
-    data["message"] = encryptMessage.base64;
-    data["roomid"] = roomId;
+    data["message"] = encrypter.encrypt(message);
+    data["room_id"] = roomId;
     return data;
   }
 }

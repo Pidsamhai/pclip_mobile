@@ -1,17 +1,23 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 import 'package:pclip_mobile/model/message.dart';
+import 'package:pclip_mobile/model/room.dart';
 import 'package:pclip_mobile/repository/auth_repository.dart';
+import 'package:pclip_mobile/utils/message_encrypter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RoomController extends GetxController {
+  late final Room room = Get.arguments;
   late final AuthRepository _authRepository;
   late final SupabaseClient _client;
-  final String roomId;
+  late final MessageEncrypter _encrypter;
   static const _storage = FlutterSecureStorage();
+  final scrollController = ScrollController();
+  final refreshController = RefreshController();
   RoomController({
-    required this.roomId,
     required AuthRepository authRepository,
     required SupabaseClient client,
   }) {
@@ -24,14 +30,16 @@ class RoomController extends GetxController {
   @override
   onInit() async {
     super.onInit();
-    String secret = (await _storage.read(key: roomId))!;
+    logDebug(room);
+    String secret = (await _storage.read(key: room.id))!;
+    _encrypter = MessageEncrypter(iv: room.iv, key: secret);
     messages.bindStream(_messageStream(secret));
   }
 
   Future<void> sendMessage(String msg) async {
     try {
-      String secret = (await _storage.read(key: roomId))!;
-      final message = Message.createJsonEncrypt(msg, secret, roomId);
+      final message = Message.createJsonEncrypt(msg, room.id, _encrypter);
+      logDebug(message);
       final result =
           await _client.from("room_message").insert(message).execute();
       logDebug(result.data);
@@ -41,10 +49,10 @@ class RoomController extends GetxController {
     }
   }
 
-  Future<void> deleteMessage(String uid) async {
+  Future<void> deleteMessage(String id) async {
     try {
       final result =
-          await _client.from("room_message").delete().eq("uid", uid).execute();
+          await _client.from("room_message").delete().eq("id", id).execute();
       logDebug(result.data);
       logError(result.error);
     } catch (e) {
@@ -54,8 +62,8 @@ class RoomController extends GetxController {
 
   Stream<List<Message>> _messageStream(String secret) {
     return _client
-        .from("room_message:roomid=eq.$roomId")
-        .stream(["uid"])
+        .from("room_message:room_id=eq.${room.id}")
+        .stream(["id"])
         .execute()
         .map((event) {
           logDebug(event);
@@ -63,7 +71,7 @@ class RoomController extends GetxController {
               .map((e) => Message.fromJsonEncrypt(
                     e,
                     owner: _authRepository.user!.id,
-                    secret: secret,
+                    encrypter: _encrypter,
                   ))
               .toList();
         });
