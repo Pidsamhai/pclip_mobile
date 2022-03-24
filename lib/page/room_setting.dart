@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pclip_mobile/controller/room_setting_controller.dart';
-import 'package:pclip_mobile/model/room.dart';
 import 'package:pclip_mobile/widget/room_member.dart';
 import 'package:pclip_mobile/widget/room_setting_input.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RoomSettingPage extends GetView<RoomSettingController> {
-  final Room room = Get.arguments;
-  RoomSettingPage({Key? key}) : super(key: key) {
-    Get.put(RoomSettingController(roomId: room.id, client: Get.find()));
-  }
+  const RoomSettingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

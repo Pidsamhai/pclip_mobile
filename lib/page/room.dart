@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pclip_mobile/binding/room_setting_binding.dart';
 import 'package:pclip_mobile/controller/room_controller.dart';
 import 'package:pclip_mobile/page/room_setting.dart';
 import 'package:pclip_mobile/widget/message_actions_bottomsheet.dart';
-import 'package:pclip_mobile/widget/refresh_indicator.dart';
 import 'package:pclip_mobile/widget/message.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RoomPage extends GetView<RoomController> {
   const RoomPage({
@@ -19,8 +18,11 @@ class RoomPage extends GetView<RoomController> {
         title: Text(controller.room.name),
         actions: [
           IconButton(
-            onPressed: () =>
-                Get.to(() => RoomSettingPage(), arguments: Get.arguments),
+            onPressed: () => Get.to(
+              () => const RoomSettingPage(),
+              arguments: Get.arguments,
+              binding: RoomSettingBinding(),
+            ),
             icon: const Icon(Icons.settings),
           )
         ],

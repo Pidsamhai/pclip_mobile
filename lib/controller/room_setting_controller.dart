@@ -11,15 +11,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RoomSettingController extends GetxController {
+  final Room roomParams = Get.arguments;
   final refreshController = RefreshController(initialRefresh: false);
   final SupabaseClient client;
   final ApiRepository _apiRepository = Get.find();
   final inputController = RoomSettingInputController();
-  final String roomId;
   static const storage = FlutterSecureStorage();
   Rx<List<RoomMember>> members = Rx<List<RoomMember>>([]);
   RoomSettingController({
-    required this.roomId,
     required this.client,
   });
 
@@ -37,10 +36,14 @@ class RoomSettingController extends GetxController {
   }
 
   Future<void> fetchData() async {
-    final secret = await storage.read(key: roomId);
+    final secret = await storage.read(key: roomParams.id);
     inputController.secretController.text = secret ?? "";
-    final roomResult =
-        await client.from("room").select().eq("id", roomId).single().execute();
+    final roomResult = await client
+        .from("room")
+        .select()
+        .eq("id", roomParams.id)
+        .single()
+        .execute();
     logError(roomResult.error);
     final room = Room.fromJson(roomResult.data);
     inputController.roomNameController.text = room.name;
@@ -51,7 +54,7 @@ class RoomSettingController extends GetxController {
     final result = await client
         .from("room_member")
         .select()
-        .eq("room_id", roomId)
+        .eq("room_id", roomParams.id)
         .execute();
     logDebug(result.data);
     logDebug(result.error);
@@ -65,17 +68,17 @@ class RoomSettingController extends GetxController {
       await client
           .from("room")
           .update({"name": inputController.name})
-          .eq("id", roomId)
+          .eq("id", roomParams.id)
           .execute();
-      await storage.write(key: roomId, value: inputController.secret);
+      await storage.write(key: roomParams.id, value: inputController.secret);
     } finally {
       Get.back();
     }
   }
 
   Future<void> addMember() async {
-    final secret = await storage.read(key: roomId);
-    final invite = await _apiRepository.createInvivite(roomId, secret!);
+    final secret = await storage.read(key: roomParams.id);
+    final invite = await _apiRepository.createInvivite(roomParams.id, secret!);
     Get.dialog(InviteDialog(invite: invite));
   }
 
