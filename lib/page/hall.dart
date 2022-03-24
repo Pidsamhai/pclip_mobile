@@ -53,7 +53,7 @@ class HallPage extends GetView<HallController> {
                   onTab: () => Get.to(
                     () => const RoomPage(),
                     arguments: item,
-                    binding: HomeBinding(),
+                    binding: RoomBinding(),
                   ),
                   onLongPress: () => Get.bottomSheet(
                     RoomActionsBottomSheet(
