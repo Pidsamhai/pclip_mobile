@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pclip_mobile/widget/email_field.dart';
 import 'package:pclip_mobile/widget/password_field.dart';
 
 class EmailPasswordForm extends StatefulWidget {
@@ -17,13 +18,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       key: widget.controller.state,
       child: Column(
         children: [
-          TextField(
-            controller: widget.controller.emailController,
-            decoration: const InputDecoration(
-              hintText: "Email",
-              filled: true,
-            ),
-          ),
+          EmailFieldWidget(controller: widget.controller.emailController),
           const SizedBox.square(dimension: 8.0),
           PasswordFieldWidget(controller: widget.controller.passwordController)
         ],

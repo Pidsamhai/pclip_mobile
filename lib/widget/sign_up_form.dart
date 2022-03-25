@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pclip_mobile/widget/email_field.dart';
 import 'package:pclip_mobile/widget/email_password_form.dart';
 import 'package:pclip_mobile/widget/password_field.dart';
 import 'package:email_validator/email_validator.dart';
@@ -18,16 +19,7 @@ class _SignUpFormState extends State<SignUpForm> {
       key: widget.controller.state,
       child: Column(
         children: [
-          TextFormField(
-            validator: (value) => EmailValidator.validate(value ?? "")
-                ? null
-                : "Invalid email format",
-            controller: widget.controller.emailController,
-            decoration: const InputDecoration(
-              hintText: "Email",
-              filled: true,
-            ),
-          ),
+          EmailFieldWidget(controller: widget.controller.emailController),
           const SizedBox.square(dimension: 8.0),
           PasswordFieldWidget(controller: widget.controller.passwordController),
           const SizedBox.square(dimension: 8.0),
