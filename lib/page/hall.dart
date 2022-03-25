@@ -1,54 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:loggy/loggy.dart';
+import 'package:pclip_mobile/binding/room_binding.dart';
 import 'package:pclip_mobile/controller/hall_controller.dart';
 import 'package:pclip_mobile/page/room.dart';
 import 'package:pclip_mobile/widget/create_room_bottomsheet.dart';
-import 'package:pclip_mobile/widget/progress_dialog.dart';
 import 'package:pclip_mobile/widget/room_actions_bottomsheet.dart';
 import 'package:pclip_mobile/widget/room_card.dart';
 import 'package:pclip_mobile/widget/user_info_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HallPage extends GetView<HallController> {
-  late final RefreshController _refreshController;
-  late final ScrollController _scrollController;
-  HallPage({Key? key}) : super(key: key) {
-    _refreshController = RefreshController(initialRefresh: false);
-    _scrollController = ScrollController();
-  }
-
-  Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 2));
-    controller.refreshData();
-    _refreshController.refreshCompleted();
-  }
-
-  Future<void> _deleteRoom(String id) async {
-    Get.dialog(
-      const ProgressDialog(),
-      barrierDismissible: false,
-    );
-    try {
-      await controller.deleteRoom(id: id);
-    } finally {
-      Get.back();
-    }
-  }
-
-  Future<void> _createRoom(String name, String secret) async {
-    logDebug(name);
-    logDebug(secret);
-    Get.dialog(
-      const ProgressDialog(),
-      barrierDismissible: false,
-    );
-    try {
-      await controller.createRoom(name, secret);
-    } finally {
-      Get.back();
-    }
-  }
+  const HallPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,22 +38,26 @@ class HallPage extends GetView<HallController> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: SmartRefresher(
-          onRefresh: _onRefresh,
+          onRefresh: () => controller.refreshData(),
           enablePullUp: false,
           header: const ClassicHeader(),
-          controller: _refreshController,
+          controller: controller.refreshController,
           child: Obx(() {
             return ListView.builder(
-              controller: _scrollController,
+              controller: controller.scrollController,
               itemCount: controller.rooms.value.length,
               itemBuilder: (context, index) {
                 final item = controller.rooms.value[index];
                 return RoomCard(
                   room: item,
-                  onTab: () => Get.to(() => RoomPage(), arguments: item),
+                  onTab: () => Get.to(
+                    () => const RoomPage(),
+                    arguments: item,
+                    binding: RoomBinding(),
+                  ),
                   onLongPress: () => Get.bottomSheet(
                     RoomActionsBottomSheet(
-                      onDelete: () => _deleteRoom(item.id),
+                      onDelete: () => controller.deleteRoom(id: item.id),
                     ),
                     enableDrag: false,
                     backgroundColor: Colors.white,
@@ -105,7 +71,7 @@ class HallPage extends GetView<HallController> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.bottomSheet(
           CreateRooomBottomSheet(
-            onCreate: (name, secret) => _createRoom(name, secret),
+            onCreate: (name, secret) => controller.createRoom(name, secret),
           ),
         ),
         child: const Icon(Icons.add),

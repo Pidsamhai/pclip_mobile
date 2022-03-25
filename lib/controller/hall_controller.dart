@@ -1,11 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 import 'package:pclip_mobile/model/room.dart';
+import 'package:pclip_mobile/widget/progress_dialog.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class HallController extends GetxController {
+  final refreshController = RefreshController(initialRefresh: false);
+  final scrollController = ScrollController();
   late final SupabaseClient _client;
   HallController({
     required SupabaseClient client,
@@ -21,12 +26,15 @@ class HallController extends GetxController {
     rooms.bindStream(_roomsStreams());
   }
 
-  refreshData() {
-    refresh();
+  Future<void> refreshData() async {
+    await Future.delayed(const Duration(seconds: 2));
+    onInit();
+    refreshController.refreshCompleted();
   }
 
   Future<void> deleteRoom({required String id}) async {
     try {
+      ProgressDialog.show();
       final result = await _client.from("room").delete().eq("id", id).execute();
       logDebug(result.data);
       logDebug(result.error);
@@ -35,11 +43,14 @@ class HallController extends GetxController {
     } catch (e) {
       logError(e);
       return;
+    } finally {
+      Get.back();
     }
   }
 
   Future<void> createRoom(String name, String secret) async {
     try {
+      ProgressDialog.show();
       final payload = {"id": const Uuid().v4(), "name": name};
       final result = await _client
           .from("room")
@@ -52,6 +63,8 @@ class HallController extends GetxController {
       await storage.write(key: payload["id"]!, value: secret);
     } catch (e) {
       logError(e);
+    } finally {
+      Get.back();
     }
   }
 
