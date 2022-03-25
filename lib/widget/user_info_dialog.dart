@@ -2,50 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
 
-class UserInfoDialog extends GetView<UserInfoController> {
+class UserInfoDialog extends Dialog {
   const UserInfoDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget? get child => const _UserInfoDialogContent();
+}
+
+class _UserInfoDialogContent extends GetView<UserInfoController> {
+  const _UserInfoDialogContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: Container(
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          width: double.maxFinite,
-          // color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text("User Info", style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox.square(dimension: 16),
+          RichText(
+            text: TextSpan(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => controller.isLoading.value
-                          ? null
-                          : controller.signOut(),
-                      child: Text(controller.isLoading.value
-                          ? "Loading..."
-                          : "SignOut"),
-                    ),
-                    const SizedBox.square(dimension: 8),
-                    ElevatedButton(
-                      onPressed: () => Get.back(),
-                      child: Text("Close"),
-                    )
-                  ],
-                )
+                TextSpan(
+                  text: "Email: ",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: controller.user.email!,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
-        ),
+          const SizedBox.square(dimension: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text("Close"),
+              ),
+              const SizedBox.square(dimension: 8),
+              TextButton(
+                onPressed: () => controller.signOut(),
+                child: const Text("SignOut"),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
