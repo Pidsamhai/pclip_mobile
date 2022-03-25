@@ -30,6 +30,10 @@ class AuthRepository {
     }
   }
 
+  Future<GotrueSessionResponse> signUp(String email, String password) {
+    return client.auth.signUp(email, password);
+  }
+
   User? get user => client.auth.currentUser;
 
   String? get accessToken => client.auth.session()?.accessToken;
