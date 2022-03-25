@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pclip_mobile/widget/password_field.dart';
 
 class EmailPasswordForm extends StatefulWidget {
   final EmailPasswordController controller;
@@ -10,14 +11,6 @@ class EmailPasswordForm extends StatefulWidget {
 }
 
 class _EmailPasswordFormState extends State<EmailPasswordForm> {
-  bool _visibility = false;
-
-  _toggleVisibility() {
-    setState(() {
-      _visibility = !_visibility;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -32,21 +25,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             ),
           ),
           const SizedBox.square(dimension: 8.0),
-          TextField(
-            controller: widget.controller.passwordController,
-            autocorrect: false,
-            obscureText: _visibility,
-            decoration: InputDecoration(
-              hintText: "Password",
-              filled: true,
-              suffixIcon: GestureDetector(
-                onTap: _toggleVisibility,
-                child: Icon(_visibility
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded),
-              ),
-            ),
-          ),
+          PasswordFieldWidget(controller: widget.controller.passwordController)
         ],
       ),
     );
