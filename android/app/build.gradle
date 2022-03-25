@@ -69,9 +69,15 @@ android {
         debug {
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
+            manifestPlaceholders = [appName: "Pclip Debug"]
         }
         release {
             signingConfig signingConfigs.release
+            manifestPlaceholders = [appName: "Pclip"]
+        }
+        profile {
+            applicationIdSuffix ".profile"
+            manifestPlaceholders = [appName: "Pclip Profile"]
         }
     }
 }
