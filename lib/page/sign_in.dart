@@ -29,46 +29,49 @@ class _SignInPageState extends AuthState<SignInPage> {
             children: [
               EmailPasswordForm(controller: widget.controller.inputController),
               const SizedBox.square(dimension: 8.0),
-              Obx(
-                () => Text(
-                  widget.controller.authError.value,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
+              GetX<SignInController>(
+                builder: (_) => widget.controller.isLoading.value
+                    ? const LinearProgressIndicator()
+                    : const SizedBox(),
               ),
               const SizedBox.square(dimension: 8.0),
               SizedBox(
                 width: double.maxFinite,
-                child: ElevatedButton(
-                  onPressed: () => widget.controller.signIn(),
-                  child: const Text("SignIn"),
+                child: GetX<SignInController>(
+                  builder: (_) => ElevatedButton(
+                    onPressed: widget.controller.isLoading.value
+                        ? null
+                        : widget.controller.signIn,
+                    child: const Text("Sign in"),
+                  ),
                 ),
               ),
               SizedBox(
                 width: double.maxFinite,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(primary: Colors.grey),
-                  onPressed: () =>
-                      Supabase.instance.client.auth.signInWithProvider(
-                    Provider.github,
-                    options: AuthOptions(
-                      redirectTo: "com.github.pidsamhai.pclip://login-callback",
-                    ),
+                child: GetX<SignInController>(
+                  builder: (_) => ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.grey),
+                    onPressed: widget.controller.isLoading.value
+                        ? null
+                        : widget.controller.githubAuth,
+                    icon: const Icon(CustomIcons.github_alt),
+                    label: const Text("Github"),
                   ),
-                  icon: const Icon(CustomIcons.github_alt),
-                  label: const Text("Github"),
                 ),
               ),
               SizedBox(
                 width: double.maxFinite,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Colors.green),
-                  onPressed: () => Get.to(
-                    () => const SignUpPage(),
-                    binding: SignUpBinding(),
+                child: GetX<SignInController>(
+                  builder: (_) => ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                    onPressed: widget.controller.isLoading.value
+                        ? null
+                        : () => Get.to(
+                              () => const SignUpPage(),
+                              binding: SignUpBinding(),
+                            ),
+                    child: const Text("Create new Account"),
                   ),
-                  child: const Text("Create new Account"),
                 ),
               )
             ],
