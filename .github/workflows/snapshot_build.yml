@@ -37,21 +37,25 @@ jobs:
 
     - name: create config
       run: |
-        echo VITE_SUPABASE_ANNON_KEY=$VITE_SUPABASE_ANNON_KEY >> .env
-        echo VITE_SUPABASE_URL=$VITE_SUPABASE_URL >> .env
-        echo VITE_API_URL=$VITE_API_URL >> .env
-        echo VITE_ANON_DOMAIN=$VITE_ANON_DOMAIN >> .env
+        echo SUPABASE_API_URL=$SUPABASE_API_URL >> .env
+        echo SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY >> .env
+        echo API_URL=$API_URL >> .env
       env:
-        VITE_SUPABASE_ANNON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs
-        VITE_SUPABASE_URL: "http://localhost:54321"
-        VITE_API_URL: "http://localhost:5000/api/v1"
-        VITE_ANON_DOMAIN: "@anon-users.pidsamhai.com"
+        SUPABASE_API_URL: "http://localhost:54321"
+        SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs"
+        API_URL: "http://localhost:5000/api/v1"
 
     - name: Build Apk
-      run: flutter build apk --profile
+      run: flutter build apk --profile --split-per-abi
 
     - uses: actions/upload-artifact@v2
       with:
-        name: android-profile
-        path: build/app/outputs/flutter-apk/app-profile.apk
-        retention-days: 7
+        name: android-profile-armv8
+        path: build/app/outputs/flutter-apk/app-arm64-v8a-profile.apk
+        retention-days: 3
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: android-release-x86-64
+        path: build/app/outputs/flutter-apk/app-x86_64-profile.apk
+        retention-days: 3

@@ -14,19 +14,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Loggy.initLoggy(
+    logOptions: const LogOptions(
+      (kDebugMode || kProfileMode) ? LogLevel.all : LogLevel.off,
+    ),
+  );
+
   await dotenv.load(fileName: ".env");
+
+  logDebug(dotenv.env);
+
   await Supabase.initialize(
     url: dotenv.env["SUPABASE_API_URL"],
     anonKey: dotenv.env["SUPABASE_ANON_KEY"],
     authCallbackUrlHostname: 'login-callback',
     localStorage: SecureLocalStorage(),
     debug: true,
-  );
-
-  Loggy.initLoggy(
-    logOptions: const LogOptions(
-      (kDebugMode || kProfileMode) ? LogLevel.all : LogLevel.off,
-    ),
   );
 
   await Get.putAsync<PackageInfo>((() => PackageInfo.fromPlatform()));

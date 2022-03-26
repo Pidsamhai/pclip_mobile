@@ -76,6 +76,7 @@ android {
             manifestPlaceholders = [appName: "Pclip"]
         }
         profile {
+            signingConfig signingConfigs.debug
             applicationIdSuffix ".profile"
             manifestPlaceholders = [appName: "Pclip Profile"]
         }
