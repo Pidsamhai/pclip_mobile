@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
+import 'package:pclip_mobile/widget/accent_color_picker_dialog.dart';
 
 class UserInfoDialog extends Dialog {
   const UserInfoDialog({Key? key}) : super(key: key);
@@ -43,10 +44,20 @@ class _UserInfoDialogContent extends GetView<UserInfoController> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
+                onPressed: () {
+                  Get.back();
+                  showDialog(
+                    context: context,
+                    builder: (context) => const AccentColorPickerDialog(),
+                  );
+                },
+                child: const Text("Accent Colors"),
+              ),
+              const SizedBox.square(dimension: 8),
+              TextButton(
                 onPressed: () => Get.back(),
                 child: const Text("Close"),
               ),
-              const SizedBox.square(dimension: 8),
               TextButton(
                 onPressed: () => controller.signOut(),
                 child: const Text("SignOut"),

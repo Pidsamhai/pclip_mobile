@@ -19,7 +19,10 @@ class HallPage extends GetView<HallController> {
         title: const Text("Rooms"),
         actions: [
           GestureDetector(
-            onTap: () => Get.dialog(const UserInfoDialog()),
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) => const UserInfoDialog(),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ClipRRect(
@@ -60,7 +63,7 @@ class HallPage extends GetView<HallController> {
                       onDelete: () => controller.deleteRoom(id: item.id),
                     ),
                     enableDrag: false,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                   ),
                 );
               },

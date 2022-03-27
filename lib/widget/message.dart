@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pclip_mobile/widget/message_actions_bottomsheet.dart';
 
 class Message extends StatelessWidget {
   final bool isOwner;
@@ -18,7 +16,9 @@ class Message extends StatelessWidget {
     return Align(
       alignment: isOwner ? Alignment.centerRight : Alignment.centerLeft,
       child: Card(
-        color: isOwner ? Colors.blue : Colors.grey.shade300,
+        color: isOwner
+            ? Theme.of(context).colorScheme.primary
+            : Colors.grey.shade300,
         child: InkWell(
           onLongPress: onLongPress,
           child: Padding(

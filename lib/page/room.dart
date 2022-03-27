@@ -56,7 +56,8 @@ class RoomPage extends GetView<RoomController> {
                             onDelete: () =>
                                 controller.deleteMessage(message.id),
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
                         ),
                       );
                     },
