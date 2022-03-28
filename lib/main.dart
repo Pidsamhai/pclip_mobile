@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:loggy/loggy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pclip_mobile/controller/app_controller.dart';
 import 'package:pclip_mobile/controller/hall_controller.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
 import 'package:pclip_mobile/page/splash.dart';
 import 'package:pclip_mobile/repository/api_repository.dart';
 import 'package:pclip_mobile/repository/auth_repository.dart';
 import 'package:pclip_mobile/component/secure_storage.dart';
+import 'package:pclip_mobile/theme/app_theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -33,6 +36,7 @@ void main() async {
     debug: true,
   );
 
+  await GetStorage.init();
   await Get.putAsync<PackageInfo>((() => PackageInfo.fromPlatform()));
   Get.put<SupabaseClient>(Supabase.instance.client);
   Get.put<AuthRepository>(AuthRepository(client: Get.find(), pkg: Get.find()));
@@ -41,36 +45,28 @@ void main() async {
     client: Get.find(),
   ));
   Get.put(ApiRepository(Get.find()));
+  Get.put(AppController());
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends GetView<AppController> {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        bottomSheetTheme: const BottomSheetThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-          ),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
+    return Obx(
+      () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        darkTheme: appTheme(
+          context,
+          primarySwatch: controller.accentColor.value,
+          brightness: Brightness.dark,
         ),
-        dialogTheme: DialogTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-        ),
+        theme: appTheme(context, primarySwatch: controller.accentColor.value),
+        home: const SplashPage(),
       ),
-      home: const SplashPage(),
     );
   }
 }
