@@ -9,8 +9,11 @@ import 'package:pclip_mobile/widget/room_card.dart';
 import 'package:pclip_mobile/widget/user_info_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class HallPage extends GetView<HallController> {
+class HallPage extends GetWidget<HallController> {
   const HallPage({Key? key}) : super(key: key);
+
+  @override
+  HallController get controller => Get.put(HallController(client: Get.find()));
 
   @override
   Widget build(BuildContext context) {

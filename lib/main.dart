@@ -5,7 +5,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:loggy/loggy.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pclip_mobile/controller/app_controller.dart';
-import 'package:pclip_mobile/controller/hall_controller.dart';
 import 'package:pclip_mobile/controller/user_info_controller.dart';
 import 'package:pclip_mobile/page/splash.dart';
 import 'package:pclip_mobile/repository/api_repository.dart';
@@ -41,9 +40,6 @@ void main() async {
   Get.put<SupabaseClient>(Supabase.instance.client);
   Get.put<AuthRepository>(AuthRepository(client: Get.find(), pkg: Get.find()));
   Get.put<UserInfoController>(UserInfoController(Get.find()));
-  Get.put<HallController>(HallController(
-    client: Get.find(),
-  ));
   Get.put(ApiRepository(Get.find()));
   Get.put(AppController());
 
