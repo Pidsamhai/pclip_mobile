@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 import 'package:pclip_mobile/model/room.dart';
 import 'package:pclip_mobile/model/room_member.dart';
+import 'package:pclip_mobile/page/hall.dart';
 import 'package:pclip_mobile/repository/api_repository.dart';
+import 'package:pclip_mobile/repository/auth_repository.dart';
 import 'package:pclip_mobile/widget/invite_data_dialog.dart';
 import 'package:pclip_mobile/widget/progress_dialog.dart';
 import 'package:pclip_mobile/widget/room_setting_input.dart';
@@ -15,6 +17,7 @@ class RoomSettingController extends GetxController {
   final refreshController = RefreshController(initialRefresh: false);
   final SupabaseClient client;
   final ApiRepository _apiRepository = Get.find();
+  final AuthRepository _authRepository = Get.find();
   final inputController = RoomSettingInputController();
   static const storage = FlutterSecureStorage();
   Rx<List<RoomMember>> members = Rx<List<RoomMember>>([]);
@@ -103,6 +106,24 @@ class RoomSettingController extends GetxController {
       logDebug(result.status);
       logDebug(result.error);
       logDebug(result.data);
+    } finally {
+      Get.back();
+    }
+  }
+
+  Future<void> leaveRoom() async {
+    try {
+      ProgressDialog.show();
+      final result = await client
+          .from("room_member")
+          .delete()
+          .eq("member_id", _authRepository.user?.id)
+          .eq("room_id", roomParams.id)
+          .execute();
+      logDebug(result.status);
+      logDebug(result.error);
+      logDebug(result.data);
+      Get.offAll(() => const HallPage());
     } finally {
       Get.back();
     }

@@ -27,45 +27,59 @@ class RoomSettingPage extends GetView<RoomSettingController> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SmartRefresher(
-          controller: controller.refreshController,
-          onRefresh: () => controller.refreshData(),
-          enablePullUp: false,
-          header: const ClassicHeader(),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Info",
-                    style: Theme.of(context).textTheme.bodyLarge,
+        child: Column(
+          children: [
+            Flexible(
+              child: SmartRefresher(
+                controller: controller.refreshController,
+                onRefresh: () => controller.refreshData(),
+                enablePullUp: false,
+                header: const ClassicHeader(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Info",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                      RoomSettingInput(
+                        controller: inputController,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Members",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                      Obx(
+                        () => Column(
+                          children: controller.members.value
+                              .map((e) => RoomMemberCard(
+                                    roomMember: e,
+                                    onDelete: () => controller.deleteMember(e),
+                                  ))
+                              .toList(),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                RoomSettingInput(
-                  controller: inputController,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Members",
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                Obx(
-                  () => Column(
-                    children: controller.members.value
-                        .map((e) => RoomMemberCard(
-                              roomMember: e,
-                              onDelete: () => controller.deleteMember(e),
-                            ))
-                        .toList(),
-                  ),
-                )
-              ],
+              ),
             ),
-          ),
+            SizedBox(
+              width: double.maxFinite,
+              child: ElevatedButton.icon(
+                onPressed: controller.leaveRoom,
+                icon: const Icon(Icons.exit_to_app_rounded),
+                label: const Text("Leave Room"),
+              ),
+            )
+          ],
         ),
       ),
     );
